@@ -51,3 +51,71 @@
 - 第五部分:拉去赞助商阶段
 
     先不想
+
+# 开发细节
+
+## 支出分类
+
+1. 支出分一~二级，现将默认的设置如下。
+
+2. 存储时,采用xx.xx的命名方式。
+
+- 餐饮 (eat&drink) key.eat_drink
+- 水果 (fruit) key.fruit
+- 交通 (transportation) key.transportation
+- 购物  
+- 投资
+- 娱乐
+- 文教
+- 其他
+
+3. 用户分类设置存储方法(使用.json来存储)
+
+category-default.json
+
+```json
+{
+    "income":[{
+        "name":"餐饮",
+        "values":[{
+            "name":"三餐",
+            "state":true
+        },{
+            "name":"零食",
+            "state":true
+        },{
+            "name":"水果",
+            "state":true
+        }]
+    },{
+        "name":"交通",
+        "values":[{
+            "name":"公交",
+            "state":false
+        }]
+    }],
+    "outcome":[{
+        "name":"工资",
+        "values":null
+    }]
+}
+```
+
+category-user.json
+
+> method=`enumof`("add","delete","show","hide");
+
+```json
+{
+    "income":[{
+        "method":"add",
+        "content":"餐饮-三餐"
+    }],
+    "outcome":[{
+        "method":"add",
+        "content":"工资-正式工资"
+    }]
+}
+```
+
+# 图标规划
