@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.BitmapFactory
 import tty.balanceyourio.R
 
+@Deprecated("请改用IOTypeProvider")
 class DataOperator{
     companion object {
         private fun getFriendString(context:Context,input:String):String{
@@ -20,7 +21,7 @@ class DataOperator{
             return value
         }
 
-        fun getOutcomeClassList(context: Context):ArrayList<HashMap<String, Any>>{
+        fun getOutcomeTypeList(context: Context):ArrayList<HashMap<String, Any>>{
             val outcomeData=ArrayList<HashMap<String, Any>>()
             for (node in BYIOCategory.getInstance().outcome){
                 val map = HashMap<String,Any>()
@@ -47,7 +48,7 @@ class DataOperator{
 //            return outcomeData
         }
 
-        fun getIncomeClassList(context: Context):ArrayList<HashMap<String, Any>>{
+        fun getIncomeTypeList(context: Context):ArrayList<HashMap<String, Any>>{
             val incomeData=ArrayList<HashMap<String, Any>>()
             for (node in BYIOCategory.getInstance().income){
                 val map = HashMap<String,Any>()

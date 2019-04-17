@@ -3,6 +3,7 @@ package tty.data
 import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
+import android.database.SQLException
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.util.Log
@@ -11,10 +12,7 @@ import tty.model.IOType
 import java.text.SimpleDateFormat
 import java.util.*
 
-class BYIOHelper(context : Context): SQLiteOpenHelper(context,
-    DB_NAME,null,
-    DB_VERSION
-) {
+class BYIOHelper(context : Context): SQLiteOpenHelper(context, DB_NAME,null, DB_VERSION) {
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
 
     }
@@ -56,6 +54,12 @@ class BYIOHelper(context : Context): SQLiteOpenHelper(context,
             writableDatabase.update(NAME_BILL,contentValues,"id = ?", arrayOf(record.id.toString()))
         }
 
+        try {
+            writableDatabase.close()
+        } catch (e:SQLException){
+            e.printStackTrace()
+        }
+
     }
 
 
@@ -85,7 +89,13 @@ class BYIOHelper(context : Context): SQLiteOpenHelper(context,
         if (cursor.moveToFirst() && (cursor.count > 0)){
             result = cursor.getString(cursor.getColumnIndex("name"))
         }
-        cursor.close()
+
+        try {
+            cursor.close()
+            readableDatabase.close()
+        } catch (e:SQLException){
+            e.printStackTrace()
+        }
 
         return result
     }
@@ -94,13 +104,13 @@ class BYIOHelper(context : Context): SQLiteOpenHelper(context,
         val cursor:Cursor = readableDatabase.rawQuery("select value from settings where name= ? limit 1", arrayOf(key))
         if (cursor.moveToFirst() && (cursor.count > 0)){
             //说明已经有储存的数据
-            val values:ContentValues= ContentValues()
+            val values = ContentValues()
             values.put("value",value)
             writableDatabase.update("settings",values,"name = ? limit 1", arrayOf(key))
         }
         else
         {
-            val values:ContentValues = ContentValues()
+            val values = ContentValues()
             values.put("name",key)
             values.put("value",value)
             val _newId:Long = writableDatabase.insert("settings",null,values)
@@ -112,16 +122,22 @@ class BYIOHelper(context : Context): SQLiteOpenHelper(context,
             }
         }
 
-        cursor.close()
+        try {
+            cursor.close()
+            readableDatabase.close()
+            writableDatabase.close()
+        } catch (e:SQLException){
+            e.printStackTrace()
+        }
     }
     //endregion
 
     companion object {
-        const val TAG="DBHELPER"
+        const val TAG="DBH"
         const val DB_VERSION=1
         const val DB_NAME="byio.db"
         const val NAME_BILL = "bill"
-        const val NAME_SETTINGS = "settings"
+        private const val NAME_SETTINGS = "settings"
 
         const val CREATE_TABLE_BILL= "create table $NAME_BILL(" +
                         "_id integer primary key autoincrement, " +
