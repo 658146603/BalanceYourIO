@@ -2,6 +2,9 @@ package tty.balanceyourio.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.res.ColorStateList
+import android.os.Build
+import android.support.annotation.RequiresApi
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -33,6 +36,7 @@ class AddBillIconAdapter(var source:List<HashMap<String,Any>>, private var rConv
         return source.count()
     }
 
+    @RequiresApi(Build.VERSION_CODES.M)
     @SuppressLint("ResourceAsColor")
     override fun onBindViewHolder(p0: ViewHolder, p1: Int) {
         val iconRes:Int = rConverter.getResID( source[p1]["icon"] as Int)
@@ -47,34 +51,21 @@ class AddBillIconAdapter(var source:List<HashMap<String,Any>>, private var rConv
         p0.textView.text = getFriendString(context ,source[p1]["class"] as String)
 
         try {
-            //重新设计选中的变色逻辑
-//            val chosen = source[p1]["chosen"] as Boolean
-//            p0.imageView.drawable.clearColorFilter()
-//            p0.imageView.drawable.setTintMode(PorterDuff.Mode.SRC_IN)
-//            if (!chosen){
-//                p0.imageView.drawable.setTint(R.color.colorAccent)
-//            } else{
-//                //outCome
-//                if (source[p1]["type"] as Int == 1){
-//                    p0.imageView.drawable.setTint(R.color.colorTypeChosenOutcome)
-//                } else{
-//                    p0.imageView.drawable.setTint(R.color.colorTypeChosenIncome)
-//                }
-//            }
-//
-//            if((source[p1]["chosen"] as Boolean?)!!){
-//                p0.linearLayout.setBackgroundColor(0x99ffff00.toInt())
-//            } else {
-//                p0.linearLayout.setBackgroundColor(0x99fafafa.toInt())
-//            }
             if((source[p1]["chosen"] as Boolean?)!!){
-                p0.imageView.setColorFilter(0xaaffff00.toInt())
+                p0.imageView.background.setTint(
+                    context.getColor(
+                        when(source[p1]["type"] as Int)
+                        {
+                            0->R.color.typeOutcomeLight
+                            1->R.color.typeIncomeLight
+                            else ->R.color.typeOthersLight
+                        }
+                    )
+                )
             } else {
-                p0.imageView.setColorFilter(0x00ffffff.toInt())
+                p0.imageView.background.setTint(context.getColor(R.color.transparent))
             }
-        } catch (e: NullPointerException){
-
-        }
+        } catch (e: NullPointerException){ }
     }
 
     interface OnItemClickListener:View.OnClickListener{
@@ -95,9 +86,7 @@ class AddBillIconAdapter(var source:List<HashMap<String,Any>>, private var rConv
             value = if (input.startsWith("key.")){
                 val key:Int? =  input.substring(4).toIntOrNull()
                 if (key != null){
-                    //Log.d("Adapter",key.toString())
                     context.getString(CategoryConverter().getResID(key))
-                    //"Hello world!"
                 }
                 else
                     "KeyNotFound"

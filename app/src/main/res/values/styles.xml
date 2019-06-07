@@ -1,10 +1,33 @@
 <resources>
 
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:colorBackground">@color/colorBackgroundLight</item>
+        <item name="android:colorForeground">@color/colorForegroundLight</item>
+        <item name="android:textColor">@color/colorForegroundLight</item>
+        <item name="android:textColorSecondary">@color/colorTextColorSecondaryDark</item>
+        <item name="android:colorEdgeEffect">@color/colorForegroundLight</item>
+        <item name="android:textColorHint">@color/colorForegroundLight</item>
     </style>
+
+<!--    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">-->
+<!--        <item name="colorPrimary">@color/colorPrimary</item>-->
+<!--        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>-->
+<!--        <item name="colorAccent">@color/colorAccent</item>-->
+<!--        <item name="android:colorBackground">@color/colorBackgroundDark</item>-->
+<!--        <item name="android:colorForeground">@color/colorForegroundDark</item>-->
+<!--        <item name="android:textColor">@color/colorForegroundDark</item>-->
+<!--        <item name="android:textColorSecondary">@color/colorTextColorSecondaryDark</item>-->
+<!--        <item name="android:colorEdgeEffect">@color/colorForegroundDark</item>-->
+<!--        <item name="android:textColorHint">@color/colorForegroundDark</item>-->
+
+<!--    </style>-->
+
+<!--    <style name="Dialog" parent="@style/Theme.AppCompat.Dialog">-->
+<!--        <item name="android:windowBackground">@color/colorBackgroundDark</item>-->
+<!--    </style>-->
 
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
@@ -12,9 +35,15 @@
     </style>
 
 
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+    <style name="AppTheme.ActionBar">
+        <item name="actionOverflowButtonStyle">@style/OverflowButtonStyle</item>
+        <item name="overlapAnchor">false</item>
+    </style>
 
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+    <style name="OverflowButtonStyle" parent="@android:style/Widget.ActionButton.Overflow">
+        <item name="android:src">@drawable/ic_expand_more_vertical_white</item>
+    </style>
+
 
     <style name="SeekBar_white">
         <item name="android:indeterminateOnly">false</item>

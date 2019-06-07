@@ -5,14 +5,28 @@
                 android:layout_height="match_parent"
                 android:padding="0dp"
                 tools:context=".page.AddBillActivity">
+    <android.support.v7.widget.Toolbar
+            android:id="@+id/add_bill_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary"
+            app:titleTextColor="@color/white"
+            app:theme="@style/AppTheme.ActionBar"
+            app:subtitleTextColor="@color/white"
+            app:title="添加账目"
+            android:padding="0dp"
+            app:contentInsetStart="8dp"
+            app:contentInsetStartWithNavigation="8dp"/>
+
     <RadioGroup
             android:id="@+id/add_bill_radio_group"
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:gravity="center_horizontal"
             android:checkedButton="@id/add_bill_radio_outcome"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="12dp"
             android:layout_height="wrap_content"
+            android:layout_below="@id/add_bill_toolbar"
             android:layout_marginEnd="16dp"
             android:layout_marginStart="16dp"
             android:layout_marginBottom="16dp">
@@ -54,95 +68,84 @@
                 android:layout_weight="1"/>
     </RadioGroup>
 
+
+
     <android.support.v7.widget.RecyclerView
             android:id="@+id/add_bill_rec_view"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingStart="8dp"
-            android:paddingEnd="8dp"
-            android:layout_marginBottom="16dp"
-            android:layout_below="@+id/add_bill_radio_group"/>
+            android:layout_height="match_parent"
+            android:layout_below="@id/add_bill_radio_group"
+            android:layout_above="@+id/linear_input_box"/>
 
     <LinearLayout android:orientation="vertical"
                   android:id="@+id/linear_input_box"
                   android:layout_width="match_parent"
                   android:layout_height="wrap_content"
-                  android:background="@color/colorPrimaryLight"
-                  android:layout_alignParentBottom="true"
-                  android:paddingBottom="16dp"
-                  android:paddingStart="16dp"
-                  android:paddingEnd="16dp">
-<!--        <SeekBar-->
-<!--                style="@style/SeekBar_white"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_marginTop="8dp"-->
-<!--                android:layout_height="40dp"-->
-<!--                android:max="16"-->
-<!--                android:background="#00000000"-->
-<!--                android:progress="8"-->
-<!--                android:id="@+id/add_sb_money"/>-->
-        <LinearLayout android:layout_width="match_parent"
-                      android:layout_height="wrap_content"
-                      android:orientation="horizontal"
-                      android:layout_marginTop="16dp">
-            <TextView android:id="@+id/add_show_now_money"
-                      android:layout_width="wrap_content"
-                      android:layout_height="40dp"
-                      android:layout_marginTop="0dp"
-                      android:textSize="24sp"
-                      android:text="@string/default_amount"
-                      android:padding="4dp"
-                      android:layout_marginEnd="8dp"
-                      android:singleLine="true"
-                      android:maxWidth="160dp"
-                      android:layout_gravity="center_horizontal"/>
-            <EditText android:id="@+id/add_input_money"
-                      android:layout_width="match_parent"
-                      android:layout_height="40dp"
-                      android:hint="@string/input_the_amount"
-                      android:background="@drawable/border"
-                      android:paddingLeft="8dp"
-                      android:paddingRight="8dp"
-                      android:paddingBottom="4dp"
-                      android:paddingTop="4dp"
-                      android:inputType="numberDecimal"
-                      android:importantForAutofill="no"/>
-        </LinearLayout>
 
-        <EditText android:paddingStart="8dp"
-                  android:paddingEnd="8dp"
-                  android:paddingTop="4dp"
-                  android:paddingBottom="4dp"
-                  android:id="@+id/add_bill_ed_remark"
-                  android:background="@drawable/shape_dash"
-                  android:hint="@string/input_remark"
-                  android:layout_marginTop="16dp"
-                  android:layout_width="match_parent"
-                  android:layout_height="40dp"
-                  android:inputType="text"
-                  android:importantForAutofill="no"/>
+                  android:layout_alignParentBottom="true">
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/add_bill_choose_date"
+                android:orientation="horizontal"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="4dp">
+            <ImageView
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_marginStart="4dp"
+                    android:padding="4dp"
+                    android:layout_gravity="center_vertical"
+                    app:srcCompat="@drawable/ic_pxl_calendar"
+                    android:tint="?android:colorForeground"
+                    android:contentDescription="@string/choose_date"/>
+            <TextView android:id="@+id/add_bill_show_date"
+                      android:layout_width="match_parent"
+                      android:layout_height="36dp"
+                      android:gravity="center_vertical"
+                      android:layout_marginStart="8dp"
+                      android:text="@string/today"
+                      android:textColor="@color/colorNormal"
+                      android:textSize="16sp"/>
+        </LinearLayout>
+        <EditText
+                android:id="@+id/add_input_money"
+                android:clickable="true"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="@string/default_amount"
+                android:background="@drawable/border_transparent"
+                android:inputType="numberDecimal"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:gravity="center"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="16dp"
+                android:textSize="36sp"
+                android:textColor="@color/colorNormalDark" android:focusable="true"/>
+        <EditText
+                android:id="@+id/add_bill_ed_remark"
+                android:background="@drawable/shape_dash"
+                android:hint="@string/input_remark"
+
+                android:layout_width="match_parent"
+                android:layout_height="36dp"
+                android:inputType="text"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"/>
 
         <Button android:id="@+id/add_bill_bt_save"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:background="@drawable/border"
                 android:text="@string/save"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="8dp"
                 android:layout_marginBottom="8sp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
                 android:textSize="20sp"/>
     </LinearLayout>
-    <ImageView
-            android:layout_width="36dp" android:layout_above="@+id/linear_input_box" android:layout_alignParentStart="true"
-            android:layout_margin="8dp" android:id="@+id/add_bill_choose_date"
-            android:layout_height="36dp" app:srcCompat="@drawable/ic_pxl_calendar" android:contentDescription="@string/choose_date"/>
-    <TextView android:id="@+id/add_bill_show_date"
-              android:layout_width="match_parent"
-              android:layout_height="36dp"
-              android:gravity="center_vertical"
-              android:text="@string/today"
-              android:textColor="@color/colorNormal"
-              android:textSize="24sp"
-              android:layout_above="@id/linear_input_box"
-              android:layout_toEndOf="@id/add_bill_choose_date"
-              android:layout_margin="8dp"/>
+
 </RelativeLayout>

@@ -1,17 +1,25 @@
 package tty.balanceyourio.page
 
 import android.content.Intent
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.design.widget.BottomNavigationView
 import android.support.v4.view.ViewPager
+import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import kotlinx.android.synthetic.main.activity_main.*
 import tty.balanceyourio.R
 import tty.balanceyourio.adapter.MainFragmentAdapter
+import tty.balanceyourio.interfaces.BillRecordDeleted
 
-class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener, ViewPager.OnPageChangeListener {
+class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener, ViewPager.OnPageChangeListener, BillRecordDeleted {
+    override fun notifyUpdate() {
+//        Log.d(TAG, "interface notifyUpdate")
+        val analysisFragment: AnalysisFragment = adapter?.getItem(1) as AnalysisFragment
+        analysisFragment.updateData()
+    }
+
+
     //TODO @WCF 预算功能设置 可灵活设置日期
     //TODO @WCF 新建账本 自定义
 
@@ -19,14 +27,17 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         return when(p0.itemId){
             R.id.item_nav_record -> {
                 main_viewPager.currentItem = 0
+                main_toolbar.title = "数据"
                 true
             }
             R.id.item_nav_analysis -> {
                 main_viewPager.currentItem = 1
+                main_toolbar.title = "分析"
                 true
             }
             R.id.item_nav_user -> {
                 main_viewPager.currentItem = 2
+                main_toolbar.title = "我的"
                 true
             }
             else -> false
@@ -47,22 +58,19 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
 
     private var adapter: MainFragmentAdapter?=null
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        //region test
-        //val iotype:BYIOType = BYIOType.default
-        //Log.d("globaltest",iotype.toString())
-        //endregion
-        //val db=BYIOHelper(this).writableDatabase
-        //
-        //db.close()
-        adapter= MainFragmentAdapter(supportFragmentManager)
+        setSupportActionBar(main_toolbar)
+        main_toolbar.title = "数据"
+        supportActionBar?.elevation=0F
+
+        adapter = MainFragmentAdapter(supportFragmentManager)
         main_viewPager.adapter=adapter
 
         main_viewPager.addOnPageChangeListener(this)
         main_bottom_nav.setOnNavigationItemSelectedListener(this)
-
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -78,6 +86,10 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
             }
             else -> false
         }
+    }
+
+    companion object{
+        const val TAG = "MA"
     }
 
 }

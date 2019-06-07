@@ -1,7 +1,8 @@
 package tty.balanceyourio.adapter
 
+import android.annotation.TargetApi
 import android.content.Context
-import android.util.Log
+import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,7 +16,8 @@ import tty.balanceyourio.data.BYIOCategory
 import tty.balanceyourio.data.BYIOHelper
 import tty.balanceyourio.model.BillRecord
 import tty.balanceyourio.model.IOType
-import java.text.SimpleDateFormat
+import tty.balanceyourio.util.DateConverter
+import java.text.DecimalFormat
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -23,17 +25,21 @@ import kotlin.collections.HashMap
 class ShowBillListAdapter(var context: Context) : BaseExpandableListAdapter() {
 
     var billList: ArrayList<ArrayList<BillRecord>> = ArrayList()
-    var dateList: ArrayList<String> = ArrayList()
-    private var daySumList: ArrayList<HashMap<IOType, Double>> = ArrayList()
+    var dateList: ArrayList<Date> = ArrayList()
+    var daySumList: ArrayList<HashMap<IOType, Double>> = ArrayList()
+
+
+
+    private val decimalFormat=DecimalFormat("#.##")
 
     init{
         val allBillRecord = BYIOHelper(context).getBill()
         if(allBillRecord.size==0){
             //TODO 记录数为0时
         } else {
-            val dateSet=HashSet<String>()
+            val dateSet=HashSet<Date>()
             for(i in 0 until allBillRecord.size){
-                dateSet.add(SimpleDateFormat("yyyy-MM-dd", Locale.CHINA).format(allBillRecord[i].time))
+                dateSet.add(DateConverter.cutToDate(allBillRecord[i].time!!))
                 daySumList.add(HashMap())
                 daySumList[i][IOType.Income]=0.0
                 daySumList[i][IOType.Outcome]=0.0
@@ -46,34 +52,31 @@ class ShowBillListAdapter(var context: Context) : BaseExpandableListAdapter() {
             for(i in 0 until dateList.size){
                 val tData=ArrayList<BillRecord>()
                 for(j in 0 until allBillRecord.size){
-                    if(SimpleDateFormat("yyyy-MM-dd", Locale.CHINA).format(allBillRecord[j].time) == dateList[i]){
+                    if(DateConverter.equalDate( allBillRecord[j].time!!, dateList[i])){
                         tData.add(allBillRecord[j])
                         when(allBillRecord[j].ioType){
-                            IOType.Income -> daySumList[i][IOType.Income] = daySumList[i][IOType.Income]!!+allBillRecord[j].amount!!
-                            IOType.Outcome -> daySumList[i][IOType.Outcome] = daySumList[i][IOType.Outcome]!!+allBillRecord[j].amount!!
-                            else -> daySumList[i][IOType.Unset] = daySumList[i][IOType.Unset]!!+allBillRecord[j].amount!!
+                            IOType.Income -> daySumList[i][IOType.Income] = daySumList[i][IOType.Income]!! + allBillRecord[j].amount
+                            IOType.Outcome -> daySumList[i][IOType.Outcome] = daySumList[i][IOType.Outcome]!! + allBillRecord[j].amount
+                            else -> daySumList[i][IOType.Unset] = daySumList[i][IOType.Unset]!! + allBillRecord[j].amount
                         }
-
                     }
                 }
 
-
-
-                tData.sortByDescending ()
-                {
-                    val calendar = Calendar.getInstance()
-                    calendar.time = it.time
-                    calendar.get(Calendar.HOUR_OF_DAY)
-                }
-
+                tData.sortByDescending { it.time }
                 billList.add(tData)
             }
         }
 
     }
 
-    override fun getGroup(groupPosition: Int): Any {
+    override fun getGroup(groupPosition: Int): ArrayList<BillRecord> {
         return billList[groupPosition]
+    }
+
+    fun getGroupDate(groupPosition: Int?): Date? {
+        if(dateList.isEmpty() || groupPosition==null)
+            return null
+        return dateList[groupPosition]
     }
 
     override fun isChildSelectable(groupPosition: Int, childPosition: Int): Boolean {
@@ -99,9 +102,10 @@ class ShowBillListAdapter(var context: Context) : BaseExpandableListAdapter() {
             viewHolder = view.tag as ParentViewHolder
         }
 
-        viewHolder.date.text = SimpleDateFormat("yyyy-MM-dd", Locale.CHINA).format((getChild(groupPosition,0) as BillRecord).time)
-        viewHolder.income.text = context.resources.getString(R.string.income) + " " + daySumList[groupPosition][IOType.Income]
-        viewHolder.outcome.text = context.resources.getString(R.string.outcome) + " " + daySumList[groupPosition][IOType.Outcome]
+        viewHolder.date.text = DateConverter.getFriendDateString((getChild(groupPosition,0) as BillRecord).time!!)
+
+        viewHolder.income.text = "${context.resources.getString(R.string.income)} ${decimalFormat.format(daySumList[groupPosition][IOType.Income])}"
+        viewHolder.outcome.text = "${context.resources.getString(R.string.outcome)} ${decimalFormat.format(daySumList[groupPosition][IOType.Outcome])}"
         return view
     }
 
@@ -109,7 +113,7 @@ class ShowBillListAdapter(var context: Context) : BaseExpandableListAdapter() {
         return billList[groupPosition].size
     }
 
-    override fun getChild(groupPosition: Int, childPosition: Int): Any {
+    override fun getChild(groupPosition: Int, childPosition: Int): BillRecord {
         return billList[groupPosition][childPosition]
     }
 
@@ -117,6 +121,7 @@ class ShowBillListAdapter(var context: Context) : BaseExpandableListAdapter() {
         return groupPosition.toLong()
     }
 
+    @TargetApi(Build.VERSION_CODES.M)
     override fun getChildView(groupPosition: Int, childPosition: Int, isLastChild: Boolean, convertView: View?, parent: ViewGroup?): View {
         val view: View
         val viewHolder: ChildViewHolder
@@ -133,10 +138,11 @@ class ShowBillListAdapter(var context: Context) : BaseExpandableListAdapter() {
             viewHolder = view.tag as ChildViewHolder
         }
 
+        val billRecord = (getChild(groupPosition,childPosition) as BillRecord)
+
         try {
-            //viewHolder.icon.setImageResource(BYIOCategory.getInstance().getIconIndex((getChild(groupPosition, childPosition) as BillRecord).goodsType!!));
-            val goodsType = (getChild(groupPosition,childPosition) as BillRecord).goodsType!!
-            Log.d("Adapter",goodsType);
+            val goodsType = billRecord.goodsType!!
+            //Log.d("Adapter", goodsType);
             val iconIndex = BYIOCategory.getInstance().getIconIndex(goodsType);
             viewHolder.icon.setImageResource(PxlIconConverter().getResID(iconIndex));
         } catch (e:Exception){
@@ -145,7 +151,7 @@ class ShowBillListAdapter(var context: Context) : BaseExpandableListAdapter() {
         }
 
 
-        when((getChild(groupPosition, childPosition) as BillRecord).ioType){
+        when(billRecord.ioType){
             IOType.Income->{
                 viewHolder.money.text="+"
                 viewHolder.money.setTextColor(context.getColor(R.color.typeIncome))
@@ -160,9 +166,18 @@ class ShowBillListAdapter(var context: Context) : BaseExpandableListAdapter() {
             }
         }
         viewHolder.comment.text = context.resources.getString(R.string.comment)
-        viewHolder.comment.append((getChild(groupPosition, childPosition) as BillRecord).remark)
-        viewHolder.money.append((getChild(groupPosition, childPosition) as BillRecord).amount.toString())
-        viewHolder.type.text = getFriendString(context, (getChild(groupPosition, childPosition) as BillRecord).goodsType!!)
+
+        if (billRecord.remark == null || billRecord.remark == ""){
+            viewHolder.comment.visibility = View.GONE
+        } else {
+            viewHolder.comment.visibility = View.VISIBLE
+        }
+
+        viewHolder.comment.append(billRecord.displayRemark)
+
+
+        viewHolder.money.append(billRecord.amount.toString())
+        viewHolder.type.text = getFriendString(context, billRecord.goodsType!!)
 
 
         return view
